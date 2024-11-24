@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predict Iris Species</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Link to external CSS file -->
+  <script>
+    // JavaScript function to send POST request and handle prediction
+    function sendPredictionRequest() {
+      // Get feature values from input fields
+      const sepalLength = parseFloat(document.getElementById('sepalLength').value);
+      const sepalWidth = parseFloat(document.getElementById('sepalWidth').value);
+      const petalLength = parseFloat(document.getElementById('petalLength').value);
+      const petalWidth = parseFloat(document.getElementById('petalWidth').value);
+
+      // Check if all input fields have been filled out with valid numbers
+      if (isNaN(sepalLength) || isNaN(sepalWidth) || isNaN(petalLength) || isNaN(petalWidth)) {
+        alert('Please fill out all fields with valid numbers!');
+        return;
+      }
+
+      // Create the features array from input values
+      const features = [sepalLength, sepalWidth, petalLength, petalWidth];
+      const url = 'http://127.0.0.1:5000/predict'; // Flask API endpoint
+      const requestBody = JSON.stringify({ features });
+
+      // Send POST request to the Flask API
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: requestBody
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Display the prediction result
+        document.getElementById('result').innerHTML = `Prediction: ${data.prediction}`;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Predict Iris Species</h1>
+
+    <!-- Input fields for Iris features -->
+    <label for="sepalLength">Sepal Length:</label>
+    <input type="number" id="sepalLength" step="any" required><br>
+
+    <label for="sepalWidth">Sepal Width:</label>
+    <input type="number" id="sepalWidth" step="any" required><br>
+
+    <label for="petalLength">Petal Length:</label>
+    <input type="number" id="petalLength" step="any" required><br>
+
+    <label for="petalWidth">Petal Width:</label>
+    <input type="number" id="petalWidth" step="any" required><br><br>
+
+    <!-- Button to trigger prediction -->
+    <button onclick="sendPredictionRequest()">Predict</button>
+
+    <!-- Display prediction result -->
+    <p id="result"></p>
+  </div>
+</body>
+</html>
